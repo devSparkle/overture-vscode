@@ -12,6 +12,12 @@
 	"activationEvents": ["onStartupFinished"],
 	"main": "./src/extension.js",
 	"contributes": {
+		"snippets": [
+			{
+				"language": "luau",
+				"path": "./src/snippets.json"
+			}
+		]
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.82.0",
