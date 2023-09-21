@@ -9,18 +9,9 @@
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [],
+	"activationEvents": ["onStartupFinished"],
 	"main": "./src/extension.js",
 	"contributes": {
-		"commands": [{
-			"command": "overture-vscode.helloWorld",
-			"title": "Hello World"
-		}]
-	},
-	"scripts": {
-		"lint": "eslint .",
-		"pretest": "npm run lint",
-		"test": "node ./test/runTest.js"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.82.0",
