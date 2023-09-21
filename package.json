@@ -1,5 +1,6 @@
 {
 	"name": "overture-vscode",
+	"publisher": "devSparkle",
 	"displayName": "Overture for VSCode",
 	"description": "Types, snippets, and autocomplete support for Overture.",
 	"version": "1.0.0",
