@@ -6,6 +6,6 @@ The [Roblox LSP](https://marketplace.visualstudio.com/items?itemName=Nightrains.
 
 ## Features
 
-- [ ] Snippets
+- [x] Snippets
 - [x] Autocomplete *(requires Roblox LSP)*
 - [x] Typechecking *(requires Roblox LSP)*
