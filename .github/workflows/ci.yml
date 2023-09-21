@@ -57,7 +57,6 @@ jobs:
             arch: arm64
             npm_config_arch: arm64
     runs-on: ${{ matrix.os }}
-    needs: validate
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
