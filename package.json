@@ -10,7 +10,7 @@
 		"vscode": "^1.82.0"
 	},
 	"categories": [
-		"Other"
+		"Snippets", "Programming Languages", "Other"
 	],
 	"activationEvents": ["onStartupFinished"],
 	"main": "./src/extension.js",
