@@ -4,6 +4,7 @@
 	"displayName": "Overture for VSCode",
 	"description": "Types, snippets, and autocomplete support for Overture.",
 	"icon": "assets/icon.png",
+	"license": "SEE LICENSE IN LICENSE",
 	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.82.0"
