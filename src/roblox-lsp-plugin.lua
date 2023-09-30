@@ -36,17 +36,40 @@ end
 function OnSetText(uri, text)
 	local diffs = {}
 	
-	for start, name, finish in text:gmatch("()Overture:LoadLibrary%(\"(.-)\"%)()") do
-		local FullName = _GetMatchingModule(name)
+	for start, content, finish in text:gmatch('()Overture:LoadLibrary(%b())()') do
+		local NamedImports = {}
+		local Name
+		
+		for Match in content:gmatch('%b""') do
+			if not Name then
+				Name = Match:sub(2, -2)
+			else
+				table.insert(NamedImports, Match:sub(2, -2))
+			end
+		end
+		
+		local FullName = (Name and _GetMatchingModule(Name)) or nil
 		
 		if FullName then
-			log.debug("Found oLibrary:", FullName, "for", name)
+			log.debug("Found oLibrary:", FullName, "for", Name)
 			
-			table.insert(diffs, {
-				start = start,
-				finish = finish - 1,
-				text = string.format("require(game.%s)", FullName),
-			})
+			if #NamedImports > 0 then
+				for Index, Import in ipairs(NamedImports) do
+					NamedImports[Index] = (string.format("require(game.%s)", FullName) .. "." .. Import)
+				end
+				
+				table.insert(diffs, {
+					start = start,
+					finish = finish - 1,
+					text = table.concat(NamedImports, ", "),
+				})
+			else
+				table.insert(diffs, {
+					start = start,
+					finish = finish - 1,
+					text = string.format("require(game.%s)", FullName),
+				})
+			end
 		end
 	end
 	
