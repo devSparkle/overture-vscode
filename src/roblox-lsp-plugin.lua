@@ -28,7 +28,7 @@ local function _GetMatchingModule(MatchName)
 		local Success, Match = pcall(string.find, FullName, "%." .. MatchName .. "$")
 		
 		if (Success and Match) and _IsoLibrary(FilePath) then
-			return string.gsub(string.gsub(FullName, "%.([^%.]-[@]%d+%.%d+%.%d+)", "[\"%1\"]"), "%.(%a-[ ][^%.]*)", "[\"%1\"]")
+			return string.gsub(string.gsub(FullName, "%.([^%.]-[@]%d+%.%d+%.%d+-?%w*)", "[\"%1\"]"), "%.(%a-[ ][^%.]*)", "[\"%1\"]")
 		end
 	end
 end
