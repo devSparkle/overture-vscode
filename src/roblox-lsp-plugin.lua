@@ -5,7 +5,12 @@ local json = require("json")
 local log = require("log")
 
 local function _IsoLibrary(FilePath)
-	local MetaFilePath = string.gsub(FilePath, "/([^/]*)%.[^/]*$", "/%1.meta.json")
+	local RawPath = string.gsub(FilePath, "([^/]*)%.[^/]*$", "%1.meta.json")
+
+	local MetaFilePath = fs.path(RawPath)
+	if tostring(MetaFilePath):find(tostring(fs.current_path())) then
+		MetaFilePath = fs.relative(MetaFilePath, fs.current_path())
+	end
 	if not fs.exists(fs.current_path() / MetaFilePath) then return false end
 	
 	local DecodeSuccess, Meta = pcall(json.decode, util.loadFile(MetaFilePath))
@@ -26,7 +31,6 @@ end
 local function _GetMatchingModule(MatchName)
 	for FullName, FilePath in next, rojo.SourceMap do
 		local Success, Match = pcall(string.find, FullName, "%." .. MatchName .. "$")
-		
 		if (Success and Match) and _IsoLibrary(FilePath) then
 			return string.gsub(string.gsub(FullName, "%.([^%.]-[@]%d+%.%d+%.%d+-?%w*)", "[\"%1\"]"), "%.(%a-[ ][^%.]*)", "[\"%1\"]")
 		end
@@ -37,6 +41,7 @@ function OnSetText(uri, text)
 	local diffs = {}
 	
 	for start, content, finish in text:gmatch('()Overture:LoadLibrary(%b())()') do
+		
 		local NamedImports = {}
 		local Name
 		
@@ -47,7 +52,6 @@ function OnSetText(uri, text)
 				table.insert(NamedImports, Match:sub(2, -2))
 			end
 		end
-		
 		local FullName = (Name and _GetMatchingModule(Name)) or nil
 		
 		if FullName then
