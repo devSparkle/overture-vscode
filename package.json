@@ -27,12 +27,12 @@
 					"group": "navigation"
 				},
 				{
-					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/",
+					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/ && config.overture-vscode.addRunContextMenu",
 					"command": "overture-vscode.setServerContext",
 					"group": "navigation"
 				},
 				{
-					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/",
+					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/ && config.overture-vscode.addRunContextMenu",
 					"command": "overture-vscode.setClientContext",
 					"group": "navigation"
 				}
@@ -52,6 +52,16 @@
 				"title": "Mark Script with Client RunContext"
 			}
 		],
+		"configuration": {
+			"title": "Overture for VSCode",
+			"properties": {
+			  "overture-vscode.addRunContextMenu": {
+				"type": "boolean",
+				"default": true,
+				"description": "Should the \"Mark Script with ... RunContext\" explorer menu be shown on \".server.lua(u)\" and \".client.lua(u)\" files."
+			  }
+			}
+		},
 		"snippets": [
 			{
 				"language": "lua",
