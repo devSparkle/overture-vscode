@@ -23,32 +23,32 @@
 			"explorer/context": [
 				{
 					"when": "resourceLangId == lua",
-					"command": "extension.toggleLibrary",
+					"command": "overture-vscode.toggleLibrary",
 					"group": "navigation"
 				},
 				{
 					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/",
-					"command": "extension.setServerContext",
+					"command": "overture-vscode.setServerContext",
 					"group": "navigation"
 				},
 				{
 					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/",
-					"command": "extension.setClientContext",
+					"command": "overture-vscode.setClientContext",
 					"group": "navigation"
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "extension.toggleLibrary",
+				"command": "overture-vscode.toggleLibrary",
 				"title": "Toggle Overture oLibrary Tag"
 			},
 			{
-				"command": "extension.setServerContext",
+				"command": "overture-vscode.setServerContext",
 				"title": "Mark Script with Server RunContext"
 			},
 			{
-				"command": "extension.setClientContext",
+				"command": "overture-vscode.setClientContext",
 				"title": "Mark Script with Client RunContext"
 			}
 		],

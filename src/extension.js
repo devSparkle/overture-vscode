@@ -58,7 +58,7 @@ function activate(context) {
 		"*.client.luau": "${capture}.meta.*"
 	}, true)
 
-	const toggleLibrary = vscode.commands.registerCommand('extension.toggleLibrary', () => {
+	const toggleLibrary = vscode.commands.registerCommand('overture-vscode.toggleLibrary', () => {
 		// The code you place here will be executed every time your command is executed
 		const file = vscode.window.activeTextEditor?.document.uri.fsPath;
 		const metaFile = getMetaFile(file);
@@ -80,8 +80,8 @@ function activate(context) {
 
 	context.subscriptions.push(toggleLibrary);
 
-	const setServer = vscode.commands.registerCommand('extension.setServerContext', () => markRunContext(vscode.window.activeTextEditor?.document.uri.fsPath, "Server"));
-	const setClient = vscode.commands.registerCommand('extension.setClientContext', () => markRunContext(vscode.window.activeTextEditor?.document.uri.fsPath, "Client"));
+	const setServer = vscode.commands.registerCommand('overture-vscode.setServerContext', () => markRunContext(vscode.window.activeTextEditor?.document.uri.fsPath, "Server"));
+	const setClient = vscode.commands.registerCommand('overture-vscode.setClientContext', () => markRunContext(vscode.window.activeTextEditor?.document.uri.fsPath, "Client"));
 
 	context.subscriptions.concat([setServer, setClient]);
 }
