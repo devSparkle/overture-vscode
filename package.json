@@ -19,6 +19,39 @@
 	"activationEvents": ["onStartupFinished"],
 	"main": "./src/extension.js",
 	"contributes": {
+		"menus": {
+			"explorer/context": [
+				{
+					"when": "resourceLangId == lua",
+					"command": "extension.toggleLibrary",
+					"group": "navigation"
+				},
+				{
+					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/",
+					"command": "extension.setServerContext",
+					"group": "navigation"
+				},
+				{
+					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/",
+					"command": "extension.setClientContext",
+					"group": "navigation"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "extension.toggleLibrary",
+				"title": "Toggle Overture oLibrary Tag"
+			},
+			{
+				"command": "extension.setServerContext",
+				"title": "Mark Script with Server RunContext"
+			},
+			{
+				"command": "extension.setClientContext",
+				"title": "Mark Script with Client RunContext"
+			}
+		],
 		"snippets": [
 			{
 				"language": "lua",
