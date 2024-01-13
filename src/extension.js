@@ -8,20 +8,22 @@ const BASE_META_FILE = {
 }
 
 const getMetaFile = (file) => {
+	console.log("Got file: " + file);
 	if (!file) return;
 	const baseName = path.join(
 		path.dirname(file), 
 		path.basename(file).split(".").at(0)
 	);
 	const metaFile = baseName + ".meta.json";
-
+	console.log(metaFile);
 	if (!fs.existsSync(metaFile)) {
 		fs.writeFileSync(metaFile, JSON.stringify(BASE_META_FILE));
 	}
 	return metaFile;
 }
 
-const markRunContext = (file, runContext) => {
+const markRunContext = (fileHandle, runContext) => {
+	const file = fileHandle?.fsPath;
 	const metaFile = getMetaFile(file);
 	if (!metaFile) return;
 	let meta = JSON.parse(fs.readFileSync(metaFile));
@@ -58,11 +60,14 @@ function activate(context) {
 		"*.client.luau": "${capture}.meta.*"
 	}, true)
 
-	const toggleLibrary = vscode.commands.registerCommand('overture-vscode.toggleLibrary', () => {
-		// The code you place here will be executed every time your command is executed
-		const file = vscode.window.activeTextEditor?.document.uri.fsPath;
+	const toggleLibrary = vscode.commands.registerCommand('overture-vscode.toggleLibrary', (fileHandle) => {
+		const file = fileHandle?.fsPath;
+		console.log(file);
 		const metaFile = getMetaFile(file);
-		if (!metaFile) return;
+		if (!metaFile) {
+			vscode.window.showErrorMessage(`Couldn't get meta file path for ${path.basename(file)}`);
+			return;
+		};
 		let meta = JSON.parse(fs.readFileSync(metaFile));
 		if (!meta?.properties) {
 			meta = { ...BASE_META_FILE };
@@ -80,8 +85,8 @@ function activate(context) {
 
 	context.subscriptions.push(toggleLibrary);
 
-	const setServer = vscode.commands.registerCommand('overture-vscode.setServerContext', () => markRunContext(vscode.window.activeTextEditor?.document.uri.fsPath, "Server"));
-	const setClient = vscode.commands.registerCommand('overture-vscode.setClientContext', () => markRunContext(vscode.window.activeTextEditor?.document.uri.fsPath, "Client"));
+	const setServer = vscode.commands.registerCommand('overture-vscode.setServerContext', (file) => markRunContext(file, "Server"));
+	const setClient = vscode.commands.registerCommand('overture-vscode.setClientContext', file => markRunContext(file, "Client"));
 
 	context.subscriptions.concat([setServer, setClient]);
 }
