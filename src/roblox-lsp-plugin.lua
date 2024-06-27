@@ -3,7 +3,6 @@ local fs = require("bee.filesystem")
 local util = require("utility")
 local json = require("json")
 local log = require("log")
-local proto = require("proto")
 local rbxlibs = require("library.rbxlibs")
 
 local function _IsoLibrary(FilePath)
@@ -28,13 +27,6 @@ local function _IsoLibrary(FilePath)
 	end
 	
 	return false
-end
-
-local function logger(msg)
-	proto.notify("window/logMessage", {
-		type = 4,
-		message = msg
-	})
 end
 
 local function GetLineFromOffset(Text, Offset)
