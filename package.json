@@ -63,6 +63,11 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Should the \"Mark Script with ... RunContext\" explorer menu be shown on \".server.lua(u)\" and \".client.lua(u)\" files."
+				},
+				"overture-vscode.rojoUrl": {
+					"type": "string",
+					"default": "http://localhost:34872",
+					"description": "What is the URL of the Rojo server?"
 				}
 			}
 		},
@@ -81,7 +86,6 @@
 		"@types/node": "16.x",
 		"@types/vscode": "^1.82.0",
 		"@vscode/test-electron": "^2.3.4",
-		"esbuild": "^0.19.11",
 		"eslint": "^8.47.0",
 		"glob": "^10.3.3",
 		"mocha": "^10.2.0",
@@ -93,5 +97,9 @@
 	},
 	"bugs": {
 		"url": "https://github.com/devSparkle/overture-vscode/issues"
+	},
+	"dependencies": {
+		"axios": "^1.7.2",
+		"dedent": "^1.5.3"
 	}
 }
