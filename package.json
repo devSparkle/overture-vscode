@@ -99,7 +99,7 @@
 		"url": "https://github.com/devSparkle/overture-vscode/issues"
 	},
 	"dependencies": {
-		"axios": "^1.8.2",
+		"axios": "^1.12.0",
 		"dedent": "^1.5.3"
 	}
 }
