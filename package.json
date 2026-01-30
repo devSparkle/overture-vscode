@@ -31,12 +31,27 @@
 					"group": "Overture@1"
 				},
 				{
+					"when": "resourceLangId == luau",
+					"command": "overture-vscode.toggleLibrary",
+					"group": "Overture@1"
+				},
+				{
 					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/ && config.overture-vscode.addRunContextMenu",
 					"command": "overture-vscode.setServerContext",
 					"group": "Overture@2"
 				},
 				{
+					"when": "resourceLangId == luau && resourceFilename =~ /.*(server|client)\\.lua(u)?$/ && config.overture-vscode.addRunContextMenu",
+					"command": "overture-vscode.setServerContext",
+					"group": "Overture@2"
+				},
+				{
 					"when": "resourceLangId == lua && resourceFilename =~ /.*(server|client)\\.lua(u)?$/ && config.overture-vscode.addRunContextMenu",
+					"command": "overture-vscode.setClientContext",
+					"group": "Overture@3"
+				},
+				{
+					"when": "resourceLangId == luau && resourceFilename =~ /.*(server|client)\\.lua(u)?$/ && config.overture-vscode.addRunContextMenu",
 					"command": "overture-vscode.setClientContext",
 					"group": "Overture@3"
 				}
@@ -74,6 +89,10 @@
 		"snippets": [
 			{
 				"language": "lua",
+				"path": "./src/snippets.json"
+			},
+			{
+				"language": "luau",
 				"path": "./src/snippets.json"
 			}
 		]
