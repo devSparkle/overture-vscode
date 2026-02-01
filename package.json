@@ -9,7 +9,7 @@
 		"theme": "dark"
 	},
 	"license": "SEE LICENSE IN LICENSE",
-	"version": "1.4.2",
+	"version": "1.4.3",
 	"engines": {
 		"vscode": "^1.108.1"
 	},
