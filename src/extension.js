@@ -44,45 +44,45 @@ const walkSourceMap = (tree) => {
 
 async function findProjectFiles() {
 	const folders = vscode.workspace.workspaceFolders
-  
+
 	if (!folders) {
-	  return Promise.reject(
-		"You must open VS Code on a workspace folder to do this."
-	  )
+		return Promise.reject(
+			"You must open VS Code on a workspace folder to do this."
+		)
 	}
-  
+
 	const projectFiles = []
-  
+
 	for (const workspaceFolder of folders) {
-	  const fileNames = (
-		await vscode.workspace.fs.readDirectory(workspaceFolder.uri)
-	  )
-		.filter(([, fileType]) => fileType === vscode.FileType.File)
-		.map(([fileName]) => fileName)
-		.filter((fileName) => fileName.endsWith(".project.json"))
-  
-	  for (const fileName of fileNames) {
-		projectFiles.push({
-		  name: fileName,
-		  workspaceFolderName: workspaceFolder.name,
-		  path: vscode.Uri.joinPath(workspaceFolder.uri, fileName),
-		})
-	  }
+		const fileNames = (
+			await vscode.workspace.fs.readDirectory(workspaceFolder.uri)
+		)
+			.filter(([, fileType]) => fileType === vscode.FileType.File)
+			.map(([fileName]) => fileName)
+			.filter((fileName) => fileName.endsWith(".project.json"))
+
+		for (const fileName of fileNames) {
+			projectFiles.push({
+				name: fileName,
+				workspaceFolderName: workspaceFolder.name,
+				path: vscode.Uri.joinPath(workspaceFolder.uri, fileName),
+			})
+		}
 	}
-  
+
 	return projectFiles
-  }
+}
 
 const getActiveProjectFile = async () => {
 	const rojoUrl = config.get("overture-vscode.rojoUrl");
 	if (!rojoUrl) {
 		vscode.window.showErrorMessage("Missing Rojo URL in settings");
-		return 
+		return
 	}
 
 	const root = await getRojoRoot(rojoUrl);
 	if (!root || !root.projectName) return;
-	
+
 	const projectFiles = await findProjectFiles();
 	const matchingProject = projectFiles.find((project) => {
 		const data = JSON.parse(fs.readFileSync(project.path.fsPath));
@@ -126,7 +126,7 @@ const getModulesFromSourceMap = async (context) => {
 const getMetaFile = (file) => {
 	if (!file) return;
 	const baseName = path.join(
-		path.dirname(file), 
+		path.dirname(file),
 		path.basename(file).split(".").at(0)
 	);
 	const metaFile = baseName + ".meta.json";
@@ -138,14 +138,14 @@ const getMetaFile = (file) => {
 }
 
 const execShell = (cmd, opts) =>
-    new Promise((resolve, reject) => {
-        cp.exec(cmd, opts, (err, out) => {
-            if (err) {
-                return reject(err);
-            }
-            return resolve(out);
-        });
-    });
+	new Promise((resolve, reject) => {
+		cp.exec(cmd, opts, (err, out) => {
+			if (err) {
+				return reject(err);
+			}
+			return resolve(out);
+		});
+	});
 
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -189,7 +189,7 @@ const getRojoRoot = async (url) => {
 			return response.data
 		}
 	} catch (error) {
-		console.error(error);		
+		console.error(error);
 	}
 }
 
@@ -241,7 +241,7 @@ const getIconThemeExtension = () => {
 
 	const themeExtensions = vscode.extensions.all.filter((ext) => ext.packageJSON.contributes?.iconThemes !== undefined);
 	const matchingExt = themeExtensions.find((ext) => ext.packageJSON.contributes.iconThemes.find((theme) => theme.id === iconTheme));
-	
+
 	if (matchingExt) {
 		const matchingTheme = matchingExt.packageJSON.contributes.iconThemes.find((theme) => theme.id === iconTheme);
 		const themePath = path.join(matchingExt.extensionPath, matchingTheme.path);
@@ -286,24 +286,23 @@ const getHoverContext = async (source) => {
 
 	const fallbackMessage = rojoEnabled ? "Cannot find source for this module" : "Turn Rojo on to get file information on oLibrary Modules";
 
-	let title = icon.appendMarkdown(dedent` 
+	let title = icon.appendMarkdown(dedent`
 		${instanceName}
 		\`${location ?? fallbackMessage}\``)
-	
+
 	if (location && rojoEnabled) {
-		const openFileCommand = vscode.Uri.parse(`command:overture-vscode.openModuleViaRojo?${
-			encodeURIComponent(JSON.stringify([{ name: instanceName }]))
-		}`);
+		const openFileCommand = vscode.Uri.parse(`command:overture-vscode.openModuleViaRojo?${encodeURIComponent(JSON.stringify([{ name: instanceName }]))
+			}`);
 		title = title.appendMarkdown(`\n#### [$(link) Open](${openFileCommand})`);
 	}
-	
+
 	if (instance?.Properties?.Source?.String) {
 		const docString = getDocString(instance.Properties.Source.String);
 		if (docString) {
 			title = title.appendMarkdown(`\n\n-------------\n\n${docString}`);
 		}
 	}
-	
+
 	title.supportHtml = true;
 	title.isTrusted = true;
 	title.supportThemeIcons = true;
@@ -335,13 +334,13 @@ const markRunContext = (fileHandle, runContext) => {
  */
 function activate(context) {
 	config.update("robloxLsp.runtime.plugin", context.asAbsolutePath("src/roblox-lsp-plugin.lua"), true)
-	
+
 	config.update("explorer.fileNesting.enabled", true, true)
 	config.update("explorer.fileNesting.expand", false, true)
 	config.update("explorer.fileNesting.patterns", {
 		"*.lua": "${capture}.meta.*",
 		"*.luau": "${capture}.meta.*",
-		
+
 		"*.server.lua": "${capture}.meta.*",
 		"*.server.luau": "${capture}.meta.*",
 		"*.client.lua": "${capture}.meta.*",
@@ -402,42 +401,44 @@ function activate(context) {
 
 	context.subscriptions.concat([setServer, setClient, openModule]);
 
-	const onHover = vscode.languages.registerHoverProvider('lua', {
+	const hoverProvider = {
 		async provideHover(document, position, token) {
-		  const line = document.lineAt(position);
-		  const range = document.getWordRangeAtPosition(position);
-		  const keyword = document.getText(range);
+			const line = document.lineAt(position);
+			const range = document.getWordRangeAtPosition(position);
+			const keyword = document.getText(range);
 
-		  const matchRange = range?.with(line.range.start, range.start);
-		  if (!matchRange || !keyword) {
-			return;
-		  };
+			const matchRange = range?.with(line.range.start, range.start);
+			if (!matchRange || !keyword) {
+				return;
+			};
 
-		  const text = document.getText(matchRange);
-		  
-		  if (text.match(/Overture:LoadLibrary\(["']?$/)) {
-			const matching = await getOvertureLibrary(keyword);
-			if (matching?.path && matching?.instance) {
-				return new vscode.Hover(
-					await getHoverContext(matching), 
-					range
-				);
-			} else {
-				return new vscode.Hover(
-					await getHoverContext({ name: keyword }), 
-					range
-				);
+			const text = document.getText(matchRange);
+
+			if (text.match(/Overture:LoadLibrary\(["']?$/)) {
+				const matching = await getOvertureLibrary(keyword);
+				if (matching?.path && matching?.instance) {
+					return new vscode.Hover(
+						await getHoverContext(matching),
+						range
+					);
+				} else {
+					return new vscode.Hover(
+						await getHoverContext({ name: keyword }),
+						range
+					);
+				}
 			}
-		  }
 		}
-	});
+	};
 
-	context.subscriptions.push(onHover);
+	const onHoverLua = vscode.languages.registerHoverProvider('lua', hoverProvider);
+	const onHoverLuau = vscode.languages.registerHoverProvider('luau', hoverProvider);
+	context.subscriptions.push(onHoverLua, onHoverLuau);
 }
 
 function deactivate() {
 	config.update("robloxLsp.runtime.plugin", undefined, true)
-	
+
 	config.update("explorer.fileNesting.enabled", undefined, true)
 	config.update("explorer.fileNesting.expand", undefined, true)
 	config.update("explorer.fileNesting.patterns", undefined, true)
