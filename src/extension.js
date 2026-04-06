@@ -1,10 +1,10 @@
-const vscode = require('vscode');
+import * as vscode from "vscode";
 const config = vscode.workspace.getConfiguration();
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const dedent = require('dedent');
-const cp = require("child_process");
+import axios from 'axios';
+import dedent from 'dedent';
+import { exec } from "child_process";
+import * as fs from 'fs';
+import * as path from 'path';
 
 const BASE_META_FILE = {
 	"properties": {},
@@ -139,7 +139,7 @@ const getMetaFile = (file) => {
 
 const execShell = (cmd, opts) =>
 	new Promise((resolve, reject) => {
-		cp.exec(cmd, opts, (err, out) => {
+		exec(cmd, opts, (err, out) => {
 			if (err) {
 				return reject(err);
 			}
@@ -332,7 +332,7 @@ const markRunContext = (fileHandle, runContext) => {
 /**
  * @param {vscode.ExtensionContext} context
  */
-function activate(context) {
+export function activate(context) {
 	config.update("robloxLsp.runtime.plugin", context.asAbsolutePath("src/roblox-lsp-plugin.lua"), true)
 
 	config.update("explorer.fileNesting.enabled", true, true)
@@ -436,15 +436,10 @@ function activate(context) {
 	context.subscriptions.push(onHoverLua, onHoverLuau);
 }
 
-function deactivate() {
+export function deactivate() {
 	config.update("robloxLsp.runtime.plugin", undefined, true)
 
 	config.update("explorer.fileNesting.enabled", undefined, true)
 	config.update("explorer.fileNesting.expand", undefined, true)
 	config.update("explorer.fileNesting.patterns", undefined, true)
-}
-
-module.exports = {
-	activate,
-	deactivate
 }
