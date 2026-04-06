@@ -22,6 +22,9 @@
 		"onStartupFinished"
 	],
 	"main": "./src/extension.js",
+	"scripts": {
+		"lint": "eslint --fix"
+	},
 	"contributes": {
 		"menus": {
 			"explorer/context": [
@@ -108,7 +111,8 @@
 		"eslint": "^10.2.0",
 		"glob": "^13.0.6",
 		"mocha": "^11.7.5",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.2",
+		"typescript-eslint": "^8.58.0"
 	},
 	"repository": {
 		"type": "git",
