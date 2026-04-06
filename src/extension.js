@@ -96,6 +96,7 @@ const getActiveProjectFile = async () => {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getModulesFromSourceMap = async (context) => {
 	let rojoProject = await getActiveProjectFile()
 	if (!rojoProject) {
@@ -402,6 +403,7 @@ export function activate(context) {
 	context.subscriptions.concat([setServer, setClient, openModule])
 
 	const hoverProvider = {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		async provideHover(document, position, token) {
 			const line = document.lineAt(position)
 			const range = document.getWordRangeAtPosition(position)
