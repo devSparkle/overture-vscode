@@ -102,7 +102,7 @@
 		]
 	},
 	"extensionPack": [
-		"Nightrains.robloxlsp"
+		"JohnnyMorganz.luau-lsp"
 	],
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
