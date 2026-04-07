@@ -101,6 +101,13 @@
 			}
 		]
 	},
+	"badges": [
+		{
+			"url": "https://github.com/devSparkle/overture-vscode/actions/workflows/ci.yml/badge.svg",
+			"href": "https://github.com/devSparkle/overture-vscode/actions/workflows/ci.yml",
+			"description": "Continuous Integration"
+		}
+	],
 	"extensionPack": [
 		"JohnnyMorganz.luau-lsp"
 	],
