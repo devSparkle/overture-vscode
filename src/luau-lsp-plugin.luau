@@ -1,48 +1,15 @@
--- local Test = Overture:LoadLibrary("Test")
-
-local function PackVararg(...)
-	local LoosePack = table.pack(...)
-	local Args = {}
-	
-	for Index = 1, LoosePack.n do
-		local Value = LoosePack[Index]
-		
-		if Value ~= nil then
-			table.insert(Args, Value)
-		end
-	end
-	
-	return Args
-end
-
-local function Merge(...)
-	local NewTable = {}
-	
-	for _, Table in ipairs(PackVararg(...)) do
-		for Index, Value in Table do
-			NewTable[Index] = Value
-		end
-	end
-	
-	return NewTable
-end
-
-local function GetLibraries(_Uri)
-	local Libraries = {}
+local function GetLibraries(_Libraries, _Uri)
+	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
 	
 	for _, Entry in lsp.fs.listDirectory(Uri) do
-		local Library = string.match(Entry:toString(), "(.*).meta.json$")
+		local Name = string.sub(Entry:toString(), #Uri:toString() + 2)
+		local Library = string.match(Name, "(.*)%.meta%.json$")
 		
 		if Library then
-			Libraries[Library] = Library
-			continue
-		end
-		
-		local Success, SubLibraries = pcall(GetLibraries, Entry)
-		Libraries = Merge(Libraries, {Success = true})
-		if Success then
-			Libraries = Merge(Libraries, SubLibraries, {Success = true})
+			Libraries[Library] = (string.sub(Entry.path, 1, -#Name - 1) .. Library)
+		else
+			pcall(GetLibraries, Libraries, Entry)
 		end
 	end
 	
@@ -72,15 +39,13 @@ return {
 				
 				local Column = (Index - LineStart + 1)
 				
-				for Lib in Libraries do
-					table.insert(Changes, {
-						startLine = Line,
-						startColumn = Column,
-						endLine = Line,
-						endColumn = (Column + #Match),
-						newText = `require("{Lib}")`,
-					})
-				end
+				table.insert(Changes, {
+					startLine = Line,
+					startColumn = Column,
+					endLine = Line,
+					endColumn = (Column + #Match),
+					newText = `require("{Libraries[Library]}"); {Match}`,
+				})
 			end
 		end
 		
