@@ -32,20 +32,47 @@ return {
 			local Match = string.match(Source, "^Overture:LoadLibrary%b()", Index)
 			
 			if Match then
-				local Library
+				local LoadData = Match
 				
-				Library = string.match(Match, "%b()")
-				Library = string.sub(Library, 3, -3)
+				LoadData = string.match(LoadData, "%b()")
+				LoadData = string.sub(LoadData, 2, -2)
+				LoadData = string.gsub(LoadData, "{", "[")
+				LoadData = string.gsub(LoadData, "}", "]")
+				LoadData = `[{LoadData}]`
+				LoadData = lsp.json.deserialize(LoadData)
 				
 				local Column = (Index - LineStart + 1)
+				local Library, NamedImports = unpack(LoadData)
 				
-				table.insert(Changes, {
-					startLine = Line,
-					startColumn = Column,
-					endLine = Line,
-					endColumn = (Column + #Match),
-					newText = `require("{Libraries[Library]}"); {Match}`,
-				})
+				if NamedImports then
+					local NewText = ""
+					
+					for Index, NamedImport in ipairs(NamedImports) do
+						NewText ..= `require("{Libraries[Library]}").{NamedImport}`
+						
+						if Index ~= #NamedImports then
+							NewText ..= ","
+						end
+					end
+					
+					NewText ..= `; {Match}`
+					
+					table.insert(Changes, {
+						startLine = Line,
+						startColumn = Column,
+						endLine = Line,
+						endColumn = (Column + #Match),
+						newText = NewText,
+					})
+				else
+					table.insert(Changes, {
+						startLine = Line,
+						startColumn = Column,
+						endLine = Line,
+						endColumn = (Column + #Match),
+						newText = `require("{Libraries[Library]}"); {Match}`,
+					})
+				end
 			end
 		end
 		
