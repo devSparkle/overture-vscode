@@ -1,4 +1,4 @@
-local function GetLibraries(_Libraries, _Uri: Uri?)
+local function GetLibraries(RelativeTo: string, _Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
 	
@@ -7,9 +7,22 @@ local function GetLibraries(_Libraries, _Uri: Uri?)
 		local Library = string.match(Name, "(.*)%.meta%.json$")
 		
 		if Library then
-			Libraries[Library] = (string.sub(Entry.path, 1, -#Name - 1) .. Library)
+			local FixedPath = Entry.path
+			
+			for _, Directory in ipairs(string.split(RelativeTo, "/")) do
+				if string.find(FixedPath, `{Directory}/`, 1, true) == 1 then
+					FixedPath = string.sub(FixedPath, #Directory + 2)
+				else
+					FixedPath = `../{FixedPath}`
+				end
+			end
+			
+			FixedPath = `./{FixedPath}`
+			FixedPath = string.gsub(FixedPath, "%./%.%.", "..")
+			
+			Libraries[Library] = (string.sub(FixedPath, 1, -#Name - 1) .. Library)
 		else
-			pcall(GetLibraries, Libraries, Entry)
+			pcall(GetLibraries, RelativeTo, Libraries, Entry)
 		end
 	end
 	
@@ -21,7 +34,7 @@ return {
 		local Changes = {}
 		local Line, LineStart = 1, 1
 		
-		local Libraries = GetLibraries()
+		local Libraries = GetLibraries((string.gsub(Context.filePath, "/[^/]-$", "")))
 		
 		for Index = 1, #Source do
 			if string.sub(Source, Index, Index) == "\n" then
