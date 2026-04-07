@@ -335,6 +335,10 @@ const markRunContext = (fileHandle, runContext) => {
  */
 export function activate(context) {
 	config.update("robloxLsp.runtime.plugin", context.asAbsolutePath("src/roblox-lsp-plugin.lua"), true)
+	
+	config.update("luau-lsp.plugins.enabled", true, true)
+	config.update("luau-lsp.plugins.paths", [context.asAbsolutePath("src/luau-lsp-plugin.luau")], true)
+	config.update("luau-lsp.plugins.fileSystem.enabled", true, true)
 
 	config.update("explorer.fileNesting.enabled", true, true)
 	config.update("explorer.fileNesting.expand", false, true)
@@ -440,6 +444,10 @@ export function activate(context) {
 
 export function deactivate() {
 	config.update("robloxLsp.runtime.plugin", undefined, true)
+	
+	config.update("luau-lsp.plugins.enabled", undefined, true)
+	config.update("luau-lsp.plugins.paths", undefined, true)
+	config.update("luau-lsp.plugins.fileSystem.enabled", undefined, true)
 
 	config.update("explorer.fileNesting.enabled", undefined, true)
 	config.update("explorer.fileNesting.expand", undefined, true)
