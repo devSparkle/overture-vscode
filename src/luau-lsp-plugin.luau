@@ -1,3 +1,17 @@
+local function IsLibrary(Uri: Uri): boolean
+	local ReadSuccess, Content = pcall(lsp.fs.readFile, Uri)
+	if not ReadSuccess then return false end
+	
+	local DecodeSuccess, SiftedContent = pcall(lsp.json.deserialize, Content)
+	if not DecodeSuccess then return false end
+	if typeof(SiftedContent) ~= "table" then return false end
+	if typeof(SiftedContent.properties) ~= "table" then return false end
+	if typeof(SiftedContent.properties.Tags) ~= "table" then return false end
+	if table.find(SiftedContent.properties.Tags, "oLibrary") == nil then return false end
+	
+	return true
+end
+
 local function GetLibraries(RelativeTo: string, _Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
@@ -6,7 +20,7 @@ local function GetLibraries(RelativeTo: string, _Libraries, _Uri: Uri?)
 		local Name = string.sub(Entry:toString(), #Uri:toString() + 2)
 		local Library = string.match(Name, "(.*)%.meta%.json$")
 		
-		if Library then
+		if Library and IsLibrary(Entry) then
 			local FixedPath = Entry.path
 			
 			for _, Directory in ipairs(string.split(RelativeTo, "/")) do
