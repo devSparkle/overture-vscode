@@ -1,0 +1,7 @@
+{
+	"luau-lsp.plugins.enabled": true,
+	"luau-lsp.plugins.paths": [
+		"./src/luau-lsp-plugin.luau"
+	],
+	"luau-lsp.plugins.fileSystem.enabled": true
+}
