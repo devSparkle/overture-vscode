@@ -1,4 +1,4 @@
-local function GetLibraries(_Libraries, _Uri)
+local function GetLibraries(_Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
 	
