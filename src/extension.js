@@ -2,7 +2,6 @@ import * as vscode from "vscode"
 const config = vscode.workspace.getConfiguration()
 import * as fs from "fs"
 import * as path from "path"
-import axios from "axios"
 import dedent from "dedent"
 import { exec } from "child_process"
 
