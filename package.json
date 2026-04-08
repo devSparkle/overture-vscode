@@ -1,31 +1,42 @@
 {
 	"name": "overture-vscode",
-	"type": "module",
-	"publisher": "devSparkle",
-	"displayName": "Overture for VSCode",
-	"description": "Types, snippets, and autocomplete support for Overture.",
-	"icon": "assets/icon.png",
-	"galleryBanner": {
-		"color": "#C80000",
-		"theme": "dark"
-	},
-	"license": "MIT",
 	"version": "1.5.0",
-	"engines": {
-		"vscode": "^1.110.0"
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/devSparkle/overture-vscode.git"
+	},
+	"main": "./src/extension.js",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^25.5.2",
+		"@types/vscode": "^1.110.0",
+		"@vscode/test-electron": "^2.5.2",
+		"eslint": "^10.2.0",
+		"glob": "^13.0.6",
+		"globals": "^17.4.0",
+		"mocha": "^11.7.5",
+		"typescript": "^6.0.2",
+		"typescript-eslint": "^8.58.0"
+	},
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"badges": [
+		{
+			"url": "https://github.com/devSparkle/overture-vscode/actions/workflows/ci.yml/badge.svg",
+			"href": "https://github.com/devSparkle/overture-vscode/actions/workflows/ci.yml",
+			"description": "Continuous Integration"
+		}
+	],
+	"bugs": {
+		"url": "https://github.com/devSparkle/overture-vscode/issues"
 	},
 	"categories": [
 		"Snippets",
 		"Programming Languages",
 		"Other"
 	],
-	"activationEvents": [
-		"onStartupFinished"
-	],
-	"main": "./src/extension.js",
-	"scripts": {
-		"lint": "eslint --fix"
-	},
 	"contributes": {
 		"menus": {
 			"explorer/context": [
@@ -101,36 +112,25 @@
 			}
 		]
 	},
-	"badges": [
-		{
-			"url": "https://github.com/devSparkle/overture-vscode/actions/workflows/ci.yml/badge.svg",
-			"href": "https://github.com/devSparkle/overture-vscode/actions/workflows/ci.yml",
-			"description": "Continuous Integration"
-		}
-	],
+	"description": "Types, snippets, and autocomplete support for Overture.",
+	"displayName": "Overture for VSCode",
+	"engines": {
+		"vscode": "^1.110.0"
+	},
 	"extensionPack": [
 		"JohnnyMorganz.luau-lsp"
 	],
-	"devDependencies": {
-		"@eslint/js": "^10.0.1",
-		"@types/mocha": "^10.0.10",
-		"@types/node": "^25.5.2",
-		"@types/vscode": "^1.110.0",
-		"@vscode/test-electron": "^2.5.2",
-		"eslint": "^10.2.0",
-		"glob": "^13.0.6",
-		"globals": "^17.4.0",
-		"mocha": "^11.7.5",
-		"typescript": "^6.0.2",
-		"typescript-eslint": "^8.58.0"
+	"galleryBanner": {
+		"color": "#C80000",
+		"theme": "dark"
 	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/devSparkle/overture-vscode.git"
+	"icon": "assets/icon.png",
+	"license": "MIT",
+	"publisher": "devSparkle",
+	"scripts": {
+		"lint": "eslint --fix"
 	},
-	"bugs": {
-		"url": "https://github.com/devSparkle/overture-vscode/issues"
-	},
+	"type": "module",
 	"dependencies": {
 		"dedent": "^1.7.2"
 	}
