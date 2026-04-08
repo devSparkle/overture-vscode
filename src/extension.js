@@ -185,9 +185,11 @@ const getDocString = (source) => {
 
 const getRojoRoot = async (url) => {
 	try {
-		const response = await axios.get(`${url}/api/rojo`, { timeout: 1000 })
-		if (response.data) {
-			return response.data
+		const response = await fetch(`${url}/api/rojo`, {signal: AbortSignal.timeout(1000)})
+		const body = await response.json()
+		
+		if (response.ok && body) {
+			return body
 		}
 	} catch (error) {
 		console.error(error)
@@ -196,9 +198,11 @@ const getRojoRoot = async (url) => {
 
 const getInstanceState = async (rojoUrl, rootInstanceId) => {
 	try {
-		const response = await axios.get(`${rojoUrl}/api/read/${rootInstanceId}`, { timeout: 1000 })
-		if (response.data && response.data.instances) {
-			return response.data.instances
+		const response = await fetch(`${rojoUrl}/api/read/${rootInstanceId}`, {signal: AbortSignal.timeout(1000)})
+		const body = await response.json()
+		
+		if (response.ok && body?.instances) {
+			return body.instances
 		}
 	} catch (error) {
 		console.error(error)
