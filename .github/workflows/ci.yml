@@ -1,22 +1,30 @@
 name: CI
-on:
-  push:
-    branches:
-      - "**"
-    tags:
-      - "v*"
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   validate:
     name: Validate Version
     runs-on: ubuntu-latest
-    if: success() && startsWith( github.ref, 'refs/tags/')
+    if: ${{ github.event_name != 'pull_request' }}
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      released: ${{ steps.is-released.outputs.released == 'true' }}
     steps:
       - uses: actions/checkout@v6
-      - name: match-tag-to-package-version
-        uses: geritol/match-tag-to-package-version@0.2.0
-        with:
-          TAG_PREFIX: v
+      - uses: oven-sh/setup-bun@v2
+      
+      - id: get-version
+        run: bun repl -e "console.log('version=' + require('./package.json').version)" >> "$GITHUB_OUTPUT"
+      
+      - id: is-released
+        run: |
+          if gh release view ${{ steps.get-version.outputs.VERSION }} &> /dev/null ; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
   
   build:
     runs-on: ubuntu-latest
@@ -36,13 +44,23 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: [build, validate]
-    if: success() && startsWith( github.ref, 'refs/tags/')
+    if: success() && !needs.validate.outputs.released
     strategy:
       matrix:
         registry: ["vsce", "ovsx"]
     steps:
       - uses: actions/download-artifact@v8
       - uses: oven-sh/setup-bun@v2
+      
+      - uses: ncipollo/release-action@v1
+        with:
+          name: ${{ needs.validate.outputs.version }}
+          tag: v${{ needs.validate.outputs.version }}
+          commit: ${{ github.head_ref || github.ref_name }} 
+          artifacts: "*.vsix"
+          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
+          generateReleaseNotes: true
+          immutableCreate: true
       
       - if: ${{ matrix.registry == 'vsce' }}
         run: bunx vsce publish --packagePath $(find . -iname *.vsix)
