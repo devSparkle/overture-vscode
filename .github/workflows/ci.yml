@@ -47,7 +47,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: [build, validate]
-    if: success() && !needs.validate.outputs.released && false
+    if: success() && !needs.validate.outputs.released
     strategy:
       matrix:
         registry: ["vsce", "ovsx"]
