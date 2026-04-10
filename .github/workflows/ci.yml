@@ -55,6 +55,16 @@ jobs:
       - uses: actions/download-artifact@v8
       - uses: oven-sh/setup-bun@v2
       
+      - uses: ncipollo/release-action@v1
+        with:
+          name: ${{ needs.validate.outputs.version }}
+          tag: v${{ needs.validate.outputs.version }}
+          commit: ${{ github.head_ref || github.ref_name }} 
+          artifacts: "*.vsix"
+          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
+          generateReleaseNotes: true
+          immutableCreate: true
+      
       - if: ${{ matrix.registry == 'vsce' }}
         run: bunx vsce publish --packagePath $(find . -iname *.vsix)
         env:
