@@ -1,3 +1,10 @@
+<div align="center">
+	<img src="https://raw.githubusercontent.com/devSparkle/overture-vscode/main/assets/icon-dark.png#gh-light-mode-only" alt="Overture" height="150" />
+	<img src="https://raw.githubusercontent.com/devSparkle/overture-vscode/main/assets/icon.png#gh-dark-mode-only" alt="Overture" height="150" />
+	<br/>
+</div>
+<br />
+
 # Overture for VSCode 
 
 Integrates [Overture] natively with VS Code and [Luau LSP] or [Roblox LSP].
