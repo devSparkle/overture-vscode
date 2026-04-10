@@ -41,13 +41,15 @@ jobs:
           if-no-files-found: error
           archive: false
   
-  publish:
-    runs-on: ubuntu-latest
+  release:
     needs: [build, validate]
-    if: success() && !needs.validate.outputs.released
-    strategy:
-      matrix:
-        registry: ["vsce", "ovsx"]
+    runs-on: ubuntu-latest
+    
+    if: success() && needs.validate.outputs.released == 'false'
+    
+    permissions:
+      contents: write
+    
     steps:
       - uses: actions/download-artifact@v8
       - uses: oven-sh/setup-bun@v2
@@ -61,6 +63,18 @@ jobs:
           prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
           generateReleaseNotes: true
           immutableCreate: true
+  
+  publish:
+    needs: [build, validate, release]
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        registry: ["vsce", "ovsx"]
+    
+    steps:
+      - uses: actions/download-artifact@v8
+      - uses: oven-sh/setup-bun@v2
       
       - if: ${{ matrix.registry == 'vsce' }}
         run: bunx vsce publish --packagePath $(find . -iname *.vsix)
