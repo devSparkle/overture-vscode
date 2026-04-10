@@ -1,14 +1,11 @@
 name: CI
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   validate:
     name: Validate Version
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       released: ${{ steps.is-released.outputs.released == 'true' }}
