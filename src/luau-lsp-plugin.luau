@@ -70,13 +70,15 @@ return {
 				Success, LoadData = pcall(lsp.json.deserialize, LoadData)
 				
 				if not Success then
-					lsp.client.sendLogMessage("info", `Failed to process match: "{Match}"`)
+					lsp.client.sendLogMessage("warning", `Failed to process match: "{Match}" in {Context.moduleName}.`)
 					
 					continue
 				end
 				
 				local Column = (Index - LineStart + 1)
 				local Library, NamedImports = unpack(LoadData)
+				
+				lsp.client.sendLogMessage("log", `Setup require path {Libraries[Library]} in {Context.filePath}`)
 				
 				if NamedImports then
 					local NewText = ""
