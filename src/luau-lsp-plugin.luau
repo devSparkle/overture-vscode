@@ -59,6 +59,7 @@ return {
 			local Match = string.match(Source, "^Overture:LoadLibrary%b()", Index)
 			
 			if Match then
+				local Success: boolean
 				local LoadData = Match
 				
 				LoadData = string.match(LoadData, "%b()")
@@ -66,7 +67,13 @@ return {
 				LoadData = string.gsub(LoadData, "{", "[")
 				LoadData = string.gsub(LoadData, "}", "]")
 				LoadData = `[{LoadData}]`
-				LoadData = lsp.json.deserialize(LoadData)
+				Success, LoadData = pcall(lsp.json.deserialize, LoadData)
+				
+				if not Success then
+					lsp.client.sendLogMessage("info", `Failed to process match: "{Match}"`)
+					
+					continue
+				end
 				
 				local Column = (Index - LineStart + 1)
 				local Library, NamedImports = unpack(LoadData)
