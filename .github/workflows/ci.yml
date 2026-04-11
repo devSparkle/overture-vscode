@@ -68,6 +68,8 @@ jobs:
     needs: [build, validate, release]
     runs-on: ubuntu-latest
     
+    if: success() && !contains(needs.validate.outputs.version, '-')
+    
     strategy:
       matrix:
         registry: ["vsce", "ovsx"]
