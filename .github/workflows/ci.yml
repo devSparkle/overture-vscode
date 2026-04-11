@@ -18,7 +18,7 @@ jobs:
       
       - id: is-released
         run: |
-          if gh release view ${{ steps.get-version.outputs.VERSION }} &> /dev/null ; then
+          if gh release view v${{ steps.get-version.outputs.VERSION }} &> /dev/null ; then
             echo "released=true" >> "$GITHUB_OUTPUT"
           else
             echo "released=false" >> "$GITHUB_OUTPUT"
