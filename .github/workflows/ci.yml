@@ -8,7 +8,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     outputs:
       version: ${{ steps.get-version.outputs.version }}
-      released: ${{ steps.is-released.outputs.released }}
+      released: ${{ steps.is-released.outputs.released == 'true' }}
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
@@ -45,7 +45,7 @@ jobs:
     needs: [build, validate]
     runs-on: ubuntu-latest
     
-    if: success() && (needs.validate.outputs.released == 'false')
+    if: success() && needs.validate.outputs.released == 'false'
     
     permissions:
       contents: write
