@@ -78,7 +78,7 @@ return {
 				local Column = (Index - LineStart + 1)
 				local Library, NamedImports = unpack(LoadData)
 				
-				lsp.client.sendLogMessage("log", `Setup require path {Libraries[Library]} in {Context.filePath}:{Line} for {Library}`)
+				lsp.client.sendLogMessage("log", `Setup require path {Libraries[Library]} in {Context.filePath}:{Line}:{Column} for {Library}`)
 				
 				if not Libraries[Library] then
 					lsp.client.sendLogMessage("warning", `No path for "{Library}" in {Context.filePath}.`)
