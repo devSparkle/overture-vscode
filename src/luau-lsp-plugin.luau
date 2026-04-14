@@ -16,12 +16,20 @@ local function GetLibraries(RelativeTo: string, _Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
 	
+	RelativeTo = string.gsub(RelativeTo, "[/\\]", "/")
+	
 	for _, Entry in lsp.fs.listDirectory(Uri) do
 		local Name = string.sub(Entry:toString(), #Uri:toString() + 2)
 		local Library = string.match(Name, "(.*)%.meta%.json$")
 		
 		if Library and IsLibrary(Entry) then
 			local FixedPath = Entry.path
+			
+			FixedPath = string.gsub(FixedPath, "[/\\]", "/")
+			
+			if string.find(FixedPath, "^/?%a:") then
+				FixedPath = string.sub(FixedPath, 2)
+			end
 			
 			for _, Directory in ipairs(string.split(RelativeTo, "/")) do
 				if string.find(FixedPath, `{Directory}/`, 1, true) == 1 then
@@ -48,7 +56,7 @@ return {
 		local Changes = {}
 		local Line, LineStart = 1, 1
 		
-		local Libraries = GetLibraries((string.gsub(Context.filePath, "/[^/]-$", "")))
+		local Libraries = GetLibraries((string.gsub(Context.filePath, "[/\\][^/\\]-$", "")))
 		
 		for Index = 1, #Source do
 			if string.sub(Source, Index, Index) == "\n" then
