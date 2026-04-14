@@ -11,7 +11,7 @@ Integrates [Overture] natively with VS Code and [Luau LSP] or [Roblox LSP].
 
 # Installation Instructions
 
-Download the extension from the [Visual Studio Marketplace][Overture-VSCode].
+Download the extension from the [Visual Studio Marketplace][Overture-VSCode] or [Open VSX][Overture-VSX].
 
 > [!IMPORTANT]
 > In order to have autocomplete and type-checking, you must install [Luau LSP]. While it does support [Roblox LSP], it is not recommended as it is currently deprecated.
@@ -50,5 +50,6 @@ The extension implements the following commands:
 
 [Overture]: https://github.com/devSparkle/Overture
 [Overture-VSCode]: https://marketplace.visualstudio.com/items?itemName=devSparkle.overture-vscode
+[Overture-VSX]: https://open-vsx.org/extension/devSparkle/overture-vscode
 [Luau LSP]: https://marketplace.visualstudio.com/items?itemName=JohnnyMorganz.luau-lsp
 [Roblox LSP]: https://marketplace.visualstudio.com/items?itemName=Nightrains.robloxlsp
