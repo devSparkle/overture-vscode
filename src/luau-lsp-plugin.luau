@@ -16,12 +16,20 @@ local function GetLibraries(RelativeTo: string, _Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
 	
+	RelativeTo = string.gsub(RelativeTo, "[/\\]", "/")
+	
 	for _, Entry in lsp.fs.listDirectory(Uri) do
 		local Name = string.sub(Entry:toString(), #Uri:toString() + 2)
 		local Library = string.match(Name, "(.*)%.meta%.json$")
 		
 		if Library and IsLibrary(Entry) then
 			local FixedPath = Entry.path
+			
+			FixedPath = string.gsub(FixedPath, "[/\\]", "/")
+			
+			if string.find(FixedPath, "^/?%a:") then
+				FixedPath = string.sub(FixedPath, 2)
+			end
 			
 			for _, Directory in ipairs(string.split(RelativeTo, "/")) do
 				if string.find(FixedPath, `{Directory}/`, 1, true) == 1 then
@@ -48,10 +56,10 @@ return {
 		local Changes = {}
 		local Line, LineStart = 1, 1
 		
-		local Libraries = GetLibraries((string.gsub(Context.filePath, "/[^/]-$", "")))
+		local Libraries = GetLibraries((string.gsub(Context.filePath, "[/\\][^/\\]-$", "")))
 		
 		for Index = 1, #Source do
-			if Source[Index] == "\n" then
+			if string.sub(Source, Index, Index) == "\n" then
 				Line += 1
 				LineStart = (Index + 1)
 			end
@@ -70,13 +78,21 @@ return {
 				Success, LoadData = pcall(lsp.json.deserialize, LoadData)
 				
 				if not Success then
-					lsp.client.sendLogMessage("info", `Failed to process match: "{Match}"`)
+					lsp.client.sendLogMessage("warning", `Failed to process match: "{Match}" in {Context.filePath}.`)
 					
 					continue
 				end
 				
 				local Column = (Index - LineStart + 1)
 				local Library, NamedImports = unpack(LoadData)
+				
+				lsp.client.sendLogMessage("log", `Setup require path {Libraries[Library]} in {Context.filePath}:{Line}:{Column} for {Library}`)
+				
+				if not Libraries[Library] then
+					lsp.client.sendLogMessage("warning", `No path for "{Library}" in {Context.filePath}.`)
+					
+					continue
+				end
 				
 				if NamedImports then
 					local NewText = ""
