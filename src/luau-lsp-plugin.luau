@@ -51,7 +51,7 @@ return {
 		local Libraries = GetLibraries((string.gsub(Context.filePath, "/[^/]-$", "")))
 		
 		for Index = 1, #Source do
-			if Source[Index] == "\n" then
+			if string.sub(Source, Index, Index) == "\n" then
 				Line += 1
 				LineStart = (Index + 1)
 			end
