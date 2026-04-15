@@ -136,6 +136,9 @@ return {
 		local Libraries = {}
 		local Parent = GetParentDirectory(Context.filePath)
 		
+		local OvertureCalls = 0
+		local MuteOverture = false
+		
 		for Index, Library in GetLibraries() do
 			if string.find(Library, "^@game") then
 				Libraries[Index] = Library
@@ -148,6 +151,11 @@ return {
 			if string.sub(Source, Index, Index) == "\n" then
 				Line += 1
 				LineStart = (Index + 1)
+			end
+			
+			if string.find(Source, "^Overture[:.]", Index) then
+				OvertureCalls += 1
+				MuteOverture = true
 			end
 			
 			local Match = string.match(Source, "^Overture:LoadLibrary%b()", Index)
@@ -206,6 +214,35 @@ return {
 						endColumn = (Column + #Match),
 						newText = `require("{Libraries[Library]}")`,
 					})
+				end
+				
+				OvertureCalls -= 1
+			end
+		end
+		
+		lsp.client.sendLogMessage("log", `{OvertureCalls} Overture calls remaining in {Context.filePath}`)
+		
+		if MuteOverture and OvertureCalls == 0 then
+			Line, LineStart = 1, 1
+			
+			for Index = 1, #Source do
+				if string.sub(Source, Index, Index) == "\n" then
+					Line += 1
+					LineStart = (Index + 1)
+				end
+				
+				local Column = (Index - LineStart + 1)
+				
+				if string.find(Source, "^Overture ?=", Index) then
+					table.insert(Changes, {
+						startLine = Line,
+						startColumn = Column,
+						endLine = Line,
+						endColumn = Column,
+						newText = "_",
+					})
+					
+					break
 				end
 			end
 		end
