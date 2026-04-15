@@ -105,8 +105,6 @@ return {
 						end
 					end
 					
-					NewText ..= `; {Match}`
-					
 					table.insert(Changes, {
 						startLine = Line,
 						startColumn = Column,
@@ -120,7 +118,7 @@ return {
 						startColumn = Column,
 						endLine = Line,
 						endColumn = (Column + #Match),
-						newText = `require("{Libraries[Library]}"); {Match}`,
+						newText = `require("{Libraries[Library]}")`,
 					})
 				end
 			end
