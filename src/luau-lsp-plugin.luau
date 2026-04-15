@@ -43,13 +43,7 @@ local function GetRelativePath(Path: string, RelativeTo: string)
 end
 
 
-local LibraryCache
-local LibraryCacheExpiration = 0
-local function GetLibraries(_Libraries, _Uri: Uri?)
-	if not _Libraries and LibraryCache and LibraryCacheExpiration > os.clock() then
-		return LibraryCache
-	end
-	
+local function _GetLibrariesFromRoot(_Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
 	
@@ -60,9 +54,21 @@ local function GetLibraries(_Libraries, _Uri: Uri?)
 		if Library and IsLibrary(Entry) then
 			Libraries[Library] = (string.sub(Entry.path, 1, -#Name - 1) .. Library)
 		else
-			pcall(GetLibraries, Libraries, Entry)
+			pcall(_GetLibrariesFromRoot, Libraries, Entry)
 		end
 	end
+	
+	return Libraries
+end
+
+local LibraryCache
+local LibraryCacheExpiration = 0
+local function GetLibraries()
+	if LibraryCache and LibraryCacheExpiration > os.clock() then
+		return LibraryCache
+	end
+	
+	local Libraries = _GetLibrariesFromRoot()
 	
 	LibraryCache = Libraries
 	LibraryCacheExpiration = (os.clock() + 5)
