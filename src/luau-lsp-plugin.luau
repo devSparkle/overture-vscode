@@ -42,22 +42,30 @@ local function GetRelativePath(Path: string, RelativeTo: string)
 	return Path
 end
 
-local function GetLibraries(RelativeTo: string, _Libraries, _Uri: Uri?)
+
+local LibraryCache
+local LibraryCacheExpiration = 0
+local function GetLibraries(_Libraries, _Uri: Uri?)
+	if not _Libraries and LibraryCache and LibraryCacheExpiration > os.clock() then
+		return LibraryCache
+	end
+	
 	local Libraries = (_Libraries or {})
 	local Uri = (_Uri or lsp.workspace.getRootUri())
-	
-	RelativeTo = NormalizePath(RelativeTo)
 	
 	for _, Entry in lsp.fs.listDirectory(Uri) do
 		local Name = string.sub(Entry:toString(), #Uri:toString() + 2)
 		local Library = string.match(Name, "(.*)%.meta%.json$")
 		
 		if Library and IsLibrary(Entry) then
-			Libraries[Library] = (string.sub(GetRelativePath(Entry.path, RelativeTo), 1, -#Name - 1) .. Library)
+			Libraries[Library] = (string.sub(Entry.path, 1, -#Name - 1) .. Library)
 		else
-			pcall(GetLibraries, RelativeTo, Libraries, Entry)
+			pcall(GetLibraries, Libraries, Entry)
 		end
 	end
+	
+	LibraryCache = Libraries
+	LibraryCacheExpiration = (os.clock() + 5)
 	
 	return Libraries
 end
@@ -67,7 +75,12 @@ return {
 		local Changes = {}
 		local Line, LineStart = 1, 1
 		
-		local Libraries = GetLibraries(GetParentDirectory(Context.filePath))
+		local Libraries = {}
+		local Parent = GetParentDirectory(Context.filePath)
+		
+		for Index, Library in GetLibraries() do
+			Libraries[Index] = GetRelativePath(Library, Parent)
+		end
 		
 		for Index = 1, #Source do
 			if string.sub(Source, Index, Index) == "\n" then
