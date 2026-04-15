@@ -37,7 +37,7 @@ local function GetRelativePath(Path: string, RelativeTo: string)
 	end
 	
 	Path = `./{Path}`
-	Path = string.gsub(Path, "%./%.%.", "..")
+	Path = string.gsub(Path, "^%./%.%.", "..")
 	
 	return Path
 end
