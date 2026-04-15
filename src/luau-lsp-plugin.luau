@@ -42,6 +42,54 @@ local function GetRelativePath(Path: string, RelativeTo: string)
 	return Path
 end
 
+type Sourcemap = {name: string, className: string, filePaths: {string}?, children: {Sourcemap}?}
+
+local function GetSourcemap(): Sourcemap?
+	local RootUri = lsp.workspace.getRootUri()
+	local SourcemapUri = RootUri:joinPath("sourcemap.json")
+	lsp.client.sendLogMessage("log", `Sourcemap at: {SourcemapUri:toString()}`)
+	
+	local ReadSuccess, Content = pcall(lsp.fs.readFile, SourcemapUri)
+	if not ReadSuccess then lsp.client.sendLogMessage("log", `Sourcemap could not be read: {Content}`); return nil end
+	
+	local DecodeSuccess, Sourcemap = pcall(lsp.json.deserialize, Content)
+	if not DecodeSuccess then lsp.client.sendLogMessage("warning", `Sourcemap could not be decoded: {Sourcemap}`); return nil end
+	
+	return Sourcemap
+end
+
+local function _GetLibrariesFromSourcemap(_Libraries, _Sourcemap: Sourcemap?, RobloxPath: string?)
+	local Libraries = (_Libraries or {})
+	local Sourcemap = (_Sourcemap or GetSourcemap())
+	
+	if not Sourcemap then
+		return
+	end
+	
+	if Sourcemap.className == "ModuleScript" and Sourcemap.filePaths then
+		local MetaFile, SourceFile
+		
+		for _, FilePath in Sourcemap.filePaths do
+			if string.find(FilePath, ".*%.meta%.json$") then
+				MetaFile = FilePath
+			else
+				SourceFile = FilePath
+			end
+		end
+		
+		if MetaFile and SourceFile and IsLibrary(lsp.workspace.getRootUri():joinPath(MetaFile)) then
+			Libraries[Sourcemap.name] = `{RobloxPath}/{Sourcemap.name}`
+		end
+	end
+	
+	if Sourcemap.children then
+		for _, Child in Sourcemap.children do
+			_GetLibrariesFromSourcemap(Libraries, Child, (RobloxPath and `{RobloxPath}/{Sourcemap.name}` or "@game"))
+		end
+	end
+	
+	return Libraries
+end
 
 local function _GetLibrariesFromRoot(_Libraries, _Uri: Uri?)
 	local Libraries = (_Libraries or {})
@@ -68,10 +116,14 @@ local function GetLibraries()
 		return LibraryCache
 	end
 	
-	local Libraries = _GetLibrariesFromRoot()
+	local Libraries = (_GetLibrariesFromSourcemap() or _GetLibrariesFromRoot())
 	
 	LibraryCache = Libraries
 	LibraryCacheExpiration = (os.clock() + 5)
+	
+	lsp.client.sendLogMessage("log", `Library log start`)
+	for i, v in Libraries do lsp.client.sendLogMessage("log", `\tLibrary log: {i} = {v}`) end
+	lsp.client.sendLogMessage("log", `Library log end`)
 	
 	return Libraries
 end
@@ -85,7 +137,11 @@ return {
 		local Parent = GetParentDirectory(Context.filePath)
 		
 		for Index, Library in GetLibraries() do
-			Libraries[Index] = GetRelativePath(Library, Parent)
+			if string.find(Library, "^@game") then
+				Libraries[Index] = Library
+			else
+				Libraries[Index] = GetRelativePath(Library, Parent)
+			end
 		end
 		
 		for Index = 1, #Source do
