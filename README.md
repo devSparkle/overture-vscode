@@ -23,7 +23,7 @@ This extension implements several snippets that can help you get your code shipp
 
 | Prefix      | Expands To                      |
 | ----------- | ------------------------------- |
-| overture    | `local Overture = require(...)` |
+| overture    | `const Overture = require(...)` |
 | get         | `Overture:Get(...)`             |
 | LoadLibrary | `Overture:LoadLibrary()`        |
 
